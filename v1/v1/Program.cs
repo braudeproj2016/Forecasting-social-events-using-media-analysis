@@ -11,6 +11,7 @@ namespace v1
         static void Main(string[] args)
         {
             System.Console.WriteLine("Heelo World!");
+            System.Console.Write("Hi");
         }
     }
 }
