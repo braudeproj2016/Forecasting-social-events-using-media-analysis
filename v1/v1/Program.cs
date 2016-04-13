@@ -10,8 +10,8 @@ namespace v1
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine("Hello World!");
-            System.Console.WriteLine("Hello All!");
+            System.Console.WriteLine("Heelo World!");
+            System.Console.Write("Hi");
         }
     }
 }
