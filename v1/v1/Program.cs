@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace v1
@@ -55,24 +56,50 @@ namespace v1
             Console.OutputEncoding = Encoding.Unicode;
             //  Program.preparefile();
             StreamReader sr = File.OpenText("out2.txt");
-            string text = "";
+            var text = "";
             while (!sr.EndOfStream)
                 text = text + " " + sr.ReadLine();
             sr.Dispose();
 
+            var ht = new Dictionary<string, int>();
+            for (int i = 0; i < text.Length - 2; i++)
+            {
+                var tmpSt = "" + text[i] + text[i + 1] + text[i + 2];
+                if (ht.ContainsKey(tmpSt))
+                    ht[tmpSt] += 1;
+                else
+                    ht.Add(tmpSt, 1);
+            }
+            var list = ht.Keys.ToList();
+            list.Sort();
+            var sw = File.CreateText("out3.txt");
+            foreach (var key in list)
+            {
+                sw.WriteLine("{0}: {1}", key, ht[key]);
+            }
+            sw.Dispose();
+
+
+
+            /*
             //WriteLine(text);
             nGram[] ht = new nGram[4567];
             //  nGram tmpNG = null;
             Console.WriteLine(ht[1]);
             string tmpSt;
             int tmp;
-            for (int i = 0; i < text.Length - 2; i++)
+            for (int i = 0; i < ht.Length - 1; i++)
             {
+                ht[0] = new nGram();
+            }
+            for (int i = 0; i < text.Length - 2; i++)
+            { 
                 tmpSt = "" + text[i] + text[i + 1] + text[i + 2];
                 tmp = hashValue(tmpSt, 0);
-                nGram tmpNG;//= ht[tmp];
+                nGram tmpNG = ht[tmp];
+                //Console.WriteLine(tmp);
                 //tmpNG = &ht[tmp];
-                update(out tmpNG, ref ht[tmp]); //<<===our problem
+                // update(out tmpNG, ref ht[tmp]); //<<===our problem
 
                 while (tmpNG != null && !(tmpNG.text.Equals(tmpSt)))
                     tmpNG = tmpNG.next;
@@ -81,6 +108,11 @@ namespace v1
                 else
                     tmpNG.inc();
             }
+            if (ht[57] == null)
+                Console.WriteLine("it's null");
+            else
+                Console.WriteLine(ht[57].count);
+            */
             Console.Read();
         }
     }
