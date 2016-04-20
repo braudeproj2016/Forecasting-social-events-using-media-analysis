@@ -57,8 +57,10 @@ namespace v1
             //  Program.preparefile();
             StreamReader sr = File.OpenText("out2.txt");
             var text = "";
+            if (!sr.EndOfStream)
+                text = sr.ReadLine();
             while (!sr.EndOfStream)
-                text = text + " " + sr.ReadLine();
+                text += " " + sr.ReadLine();
             sr.Dispose();
 
             var ht = new Dictionary<string, int>();
@@ -70,6 +72,7 @@ namespace v1
                 else
                     ht.Add(tmpSt, 1);
             }
+            /*
             var list = ht.Keys.ToList();
             list.Sort();
             var sw = File.CreateText("out3.txt");
@@ -78,8 +81,23 @@ namespace v1
                 sw.WriteLine("{0}: {1}", key, ht[key]);
             }
             sw.Dispose();
-
-
+            */
+            var items = from pair in ht
+                        orderby pair.Value descending
+                        select pair;
+            
+            var sw = File.CreateText("out4.txt");
+            Console.WriteLine(ht.Count);
+            int k = 0;
+            foreach (KeyValuePair<string, int> pair in items)
+            {
+                sw.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                if (k < (ht.Count / 10))
+                    k++;
+                else
+                    break;
+            }
+            sw.Dispose();
 
             /*
             //WriteLine(text);
