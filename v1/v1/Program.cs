@@ -12,10 +12,294 @@ namespace v1
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine("Heelo World!");
-            System.Console.Write("Hi");
-            runit();
+            Console.OutputEncoding = Encoding.Unicode;
+            //System.Console.WriteLine("Heelo World!");
+            //System.Console.Write("Hi");
+            preparefile1();
+            //runit();
         }
+        public static void preparefile1()
+        {
+            StreamReader sr = new StreamReader("stopwords.txt");
+            List<string> listOfStopWords = new List<string>();
+            while (!sr.EndOfStream)
+                listOfStopWords.Add(sr.ReadLine());
+            sr.Dispose();
+            sr = File.OpenText(@"newsp1/1.txt");
+            string s;
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in listOfStopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            string s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in listOfStopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+
+            var tmpht = new Dictionary<string, int>();
+            for (int i = 0; i < s1.Length - 2; i++)
+            {
+                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
+                if (tmpht.ContainsKey(tmpSt))
+                    tmpht[tmpSt] += 1;
+                else
+                    tmpht.Add(tmpSt, 1);
+            }
+
+            var items = from pair in tmpht
+                        orderby pair.Value descending
+                        select pair;
+            int k = 0;
+            var nGrams = new Dictionary<string, int>();
+            var htp1n1 = new Dictionary<string, int>();
+            var htp1n2 = new Dictionary<string, int>();
+            var htp1n3 = new Dictionary<string, int>();
+            var htp2n1 = new Dictionary<string, int>();
+            var htp2n2 = new Dictionary<string, int>();
+            var htp2n3 = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> pair in items)
+            {
+                nGrams.Add(pair.Key, 0);
+                htp1n1.Add(pair.Key, pair.Value);
+                htp1n2.Add(pair.Key, 0);
+                htp1n3.Add(pair.Key, 0);
+                htp2n1.Add(pair.Key, 0);
+                htp2n2.Add(pair.Key, 0);
+                htp2n3.Add(pair.Key, 0);
+                if (k < (tmpht.Count / 10))
+                    k++;
+                else
+                    break;
+            }
+          //  Console.WriteLine(tmpht.Count);
+
+            ///second newspaper
+            sr = File.OpenText(@"newsp1/2.txt");
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in listOfStopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in listOfStopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+
+            for (int i = 0; i < s1.Length - 2; i++)
+            {
+                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
+                if (htp1n2.ContainsKey(tmpSt))
+                    htp1n2[tmpSt] += 1;
+            }
+            ///third newspaper
+            sr = File.OpenText(@"newsp1/3.txt");
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in listOfStopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in listOfStopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+
+            for (int i = 0; i < s1.Length - 2; i++)
+            {
+                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
+                if (htp1n3.ContainsKey(tmpSt))
+                    htp1n3[tmpSt] += 1;
+            }
+            ///1 newspaper2
+            sr = File.OpenText(@"newsp2/1.txt");
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in listOfStopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in listOfStopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+
+            for (int i = 0; i < s1.Length - 2; i++)
+            {
+                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
+                if (htp2n1.ContainsKey(tmpSt))
+                    htp2n1[tmpSt] += 1;
+            }
+            ///2 newspaper2
+            sr = File.OpenText(@"newsp2/2.txt");
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in listOfStopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in listOfStopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+
+            for (int i = 0; i < s1.Length - 2; i++)
+            {
+                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
+                if (htp2n2.ContainsKey(tmpSt))
+                    htp2n2[tmpSt] += 1;
+            }
+            ///1 newspaper3
+            sr = File.OpenText(@"newsp2/3.txt");
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in listOfStopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in listOfStopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+
+            for (int i = 0; i < s1.Length - 2; i++)
+            {
+                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
+                if (htp2n3.ContainsKey(tmpSt))
+                    htp2n3[tmpSt] += 1;
+            }
+            ///sorting all
+            var template = from pair in nGrams
+                         orderby pair.Value descending
+                         select pair;
+            var items1 = from pair in htp1n1
+                         orderby pair.Value descending
+                         select pair;
+            var items2 = from pair in htp1n2
+                         orderby pair.Value descending
+                         select pair;
+            var items3 = from pair in htp1n3
+                         orderby pair.Value descending
+                         select pair;
+
+            /*           var items4 = from pair in htp2n1
+                                    orderby pair.Value descending
+                                    select pair;
+                       var items5 = from pair in htp2n2
+                                    orderby pair.Value descending
+                                    select pair;
+                       var items6 = from pair in htp2n3
+                                    orderby pair.Value descending
+                                    select pair;
+           */
+            double sum = 0;
+            double[] arr = new double[10];
+            int index1,index2,index3;
+            index1 = 0;
+            foreach (KeyValuePair<string, int> pair1 in template)
+            {
+                index1++;
+                index2 = 0;
+                index3 = 0;
+                foreach (KeyValuePair<string, int> pair2 in items1)
+                {
+                    index2++;
+                    if (pair1.Key.Equals(pair2.Key))
+                        break;
+                }
+                foreach (KeyValuePair<string, int> pair2 in items2)
+                {
+                    index3++;
+                    if (pair1.Key.Equals(pair2.Key))
+                        break;
+                }
+                sum += Math.Pow((Math.Abs(index1 - index2) - Math.Abs(index1 - index3)), 2);
+
+            }
+            arr[0] = (1 - sum * 6 / ((Math.Pow(nGrams.Count, 2) - 1) * nGrams.Count));
+            foreach (KeyValuePair<string, int> pair1 in template)
+            {
+                index1++;
+                index2 = 0;
+                index3 = 0;
+                foreach (KeyValuePair<string, int> pair2 in items1)
+                {
+                    index2++;
+                    if (pair1.Key.Equals(pair2.Key))
+                        break;
+                }
+                foreach (KeyValuePair<string, int> pair2 in items3)
+                {
+                    index3++;
+                    if (pair1.Key.Equals(pair2.Key))
+                        break;
+                }
+                sum += Math.Pow((Math.Abs(index1 - index2) - Math.Abs(index1 - index3)), 2);
+
+            }
+            arr[1] = (1 - sum * 6 / ((Math.Pow(nGrams.Count, 2) - 1) * nGrams.Count));
+
+            Console.Read();
+        }
+
+
+
 
         public static void preparefile()
         {
@@ -41,10 +325,6 @@ namespace v1
             sw.Dispose();
         }
 
-        public static int hashValue(string st, int i)
-        {
-            return (Convert.ToInt32(st[i]) * 3 + Convert.ToInt32(st[i + 1]) * 10 + Convert.ToInt32(st[i + 2]) * 4) % 4567;
-        }
 
         static void runit()
         {
@@ -67,16 +347,7 @@ namespace v1
                 else
                     ht.Add(tmpSt, 1);
             }
-            /*
-            var list = ht.Keys.ToList();
-            list.Sort();
-            var sw = File.CreateText("out3.txt");
-            foreach (var key in list)
-            {
-                sw.WriteLine("{0}: {1}", key, ht[key]);
-            }
-            sw.Dispose();
-            */
+
             var items = from pair in ht
                         orderby pair.Value descending
                         select pair;
@@ -94,38 +365,6 @@ namespace v1
             }
             sw.Dispose();
 
-            /*
-            //WriteLine(text);
-            nGram[] ht = new nGram[4567];
-            //  nGram tmpNG = null;
-            Console.WriteLine(ht[1]);
-            string tmpSt;
-            int tmp;
-            for (int i = 0; i < ht.Length - 1; i++)
-            {
-                ht[0] = new nGram();
-            }
-            for (int i = 0; i < text.Length - 2; i++)
-            { 
-                tmpSt = "" + text[i] + text[i + 1] + text[i + 2];
-                tmp = hashValue(tmpSt, 0);
-                nGram tmpNG = ht[tmp];
-                //Console.WriteLine(tmp);
-                //tmpNG = &ht[tmp];
-                // update(out tmpNG, ref ht[tmp]); //<<===our problem
-
-                while (tmpNG != null && !(tmpNG.text.Equals(tmpSt)))
-                    tmpNG = tmpNG.next;
-                if (tmpNG == null)
-                    tmpNG = new nGram(tmpSt);
-                else
-                    tmpNG.inc();
-            }
-            if (ht[57] == null)
-                Console.WriteLine("it's null");
-            else
-                Console.WriteLine(ht[57].count);
-            */
             Console.Read();
         }
     }
