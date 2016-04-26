@@ -46,11 +46,6 @@ namespace v1
             return (Convert.ToInt32(st[i]) * 3 + Convert.ToInt32(st[i + 1]) * 10 + Convert.ToInt32(st[i + 2]) * 4) % 4567;
         }
 
-        public static void update(out nGram a, ref nGram b)
-        {
-            a = b;
-        }
-
         static void runit()
         {
             Console.OutputEncoding = Encoding.Unicode;
