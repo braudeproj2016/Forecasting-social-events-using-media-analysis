@@ -324,10 +324,14 @@ namespace v1
                 else
                     template.Add(tmpSt, 1);
             }
+            
             //IOrderedEnumerable<string,int>
             var items = from pair in template
                         orderby pair.Value descending
                         select pair;
+            /////////////////////////////////////////////////////
+            //List<KeyValuePair<string, int>> myTry = new List<KeyValuePair<string, int>>(items);
+            /////////////////////////////////////////////////////
 
             int k = 0;
             var nGrams = new Dictionary<string, int>();
