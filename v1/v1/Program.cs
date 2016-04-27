@@ -15,7 +15,7 @@ namespace v1
             Console.OutputEncoding = Encoding.Unicode;
             //System.Console.WriteLine("Heelo World!");
             //System.Console.Write("Hi");
-            preparefile1();
+            preparefile2();
             //runit();
         }
         public static void preparefile1()
@@ -298,7 +298,104 @@ namespace v1
             Console.Read();
         }
 
+        public static void preparefile2()
+        {
+            StreamReader sr = new StreamReader("stopwords.txt");
+            List<string> listOfStopWords = new List<string>();
+            while (!sr.EndOfStream)
+                listOfStopWords.Add(sr.ReadLine());
+            sr.Dispose();
 
+            string[] array1 = Directory.GetFiles(@"texts\");
+
+            List<string> listOfNewspapers = new List<string>();
+            foreach (string name in array1)
+            {
+                listOfNewspapers.Add(file2String(name, listOfStopWords));
+            }
+            Console.WriteLine("--- read files ---");
+            
+            var template = new Dictionary<string, int>();
+            for (int i = 0; i < listOfNewspapers[0].Length - 2; i++)
+            {
+                var tmpSt = "" + listOfNewspapers[0][i] + listOfNewspapers[0][i + 1] + listOfNewspapers[0][i + 2];
+                if (template.ContainsKey(tmpSt))
+                    template[tmpSt] += 1;
+                else
+                    template.Add(tmpSt, 1);
+            }
+            //IOrderedEnumerable<string,int>
+            var items = from pair in template
+                        orderby pair.Value descending
+                        select pair;
+
+            int k = 0;
+            var nGrams = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> pair in items)
+            {
+                nGrams.Add(pair.Key, pair.Value);
+                if (k < (template.Count / 10))
+                    k++;
+                else
+                    break;
+            }
+            Console.WriteLine("--- first nGram Done ---");
+
+            //List<List<KeyValuePair<string, int>>> hist = new List<List<KeyValuePair<string, int>>>();
+
+            
+            foreach (string newspaper in listOfNewspapers)
+            {
+                var tmpHT = new Dictionary<string, int>();
+                for (int i = 0; i < newspaper.Length - 2; i++)
+                {
+                    var tmpSt = "" + newspaper[i] + newspaper[i + 1] + newspaper[i + 2];
+                    if (template.ContainsKey(tmpSt) && tmpHT.ContainsKey(tmpSt))
+                        tmpHT[tmpSt] += 1;
+                    else
+                        if (template.ContainsKey(tmpSt))
+                            tmpHT.Add(tmpSt, 1);
+                }
+
+                var tmpItems = from pair in tmpHT
+                            orderby pair.Value descending
+                            select pair;
+
+                //   typeof(tmpItems);
+                Console.WriteLine(tmpItems.GetType());
+
+              //  ht.Add(tmpItems);
+            }
+
+
+            Console.Read();
+        }
+
+        public static string file2String(string fileName, List<string> stopWords)
+        {
+            var sr = File.OpenText(fileName);
+            string s;
+            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+
+            foreach (string word in stopWords)
+            {
+                s = s.Replace(" " + word + " ", " ");
+            }
+            string s1 = Regex.Replace(s, @"\s+", " ");
+
+            while (!sr.EndOfStream)
+            {
+                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+                foreach (string word in stopWords)
+                {
+                    s = s.Replace(" " + word + " ", " ");
+                }
+                s1 += " " + s;
+            }
+            s1 = Regex.Replace(s1, @"\s+", " ");
+            sr.Dispose();
+            return s1;
+        }
 
 
         public static void preparefile()
