@@ -15,364 +15,164 @@ namespace v1
             Console.OutputEncoding = Encoding.Unicode;
             //System.Console.WriteLine("Heelo World!");
             //System.Console.Write("Hi");
-            preparefile2();
+            preparefile();
             //runit();
         }
-        public static void preparefile1()
+
+        public static void preparefile()
         {
-            StreamReader sr = new StreamReader("stopwords.txt");
-            List<string> listOfStopWords = new List<string>();
-            while (!sr.EndOfStream)
-                listOfStopWords.Add(sr.ReadLine());
-            sr.Dispose();
-            sr = File.OpenText(@"newsp1/1.txt");
-            string s;
-            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
+            var listOfStopWords = readStopWords(@"C:\Users\Semion\Desktop\porj\stopwords.txt");
 
-            foreach (string word in listOfStopWords)
-            {
-                s = s.Replace(" " + word + " ", " ");
-            }
-            string s1 = Regex.Replace(s, @"\s+", " ");
+            var array1 = Directory.GetFiles(@"C:\Users\Semion\Desktop\porj\text1\");
+            var array2 = Directory.GetFiles(@"C:\Users\Semion\Desktop\porj\text2\");
 
-            while (!sr.EndOfStream)
-            {
-                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                s1 += " " + s;
-            }
-            s1 = Regex.Replace(s1, @"\s+", " ");
-            sr.Dispose();
+            var listOfNewspapers1 = readNewspapers(array1, listOfStopWords); // return newpaper
+                                                                             // var listOfNewspapers2 = readNewspapers(array2, listOfStopWords);
+            var listOfNewspapers2 = readNewspapers(array2, listOfStopWords);
 
-            var tmpht = new Dictionary<string, int>();
-            for (int i = 0; i < s1.Length - 2; i++)
-            {
-                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
-                if (tmpht.ContainsKey(tmpSt))
-                    tmpht[tmpSt] += 1;
-                else
-                    tmpht.Add(tmpSt, 1);
-            }
+            //var hh = histHandler(listOfNewspapers1[0], listOfNewspapers1[1]); // for zv only - return histograms 10% that we gonna use
+            var hh = histHandler(listOfNewspapers1[0], listOfNewspapers2[0]); // for dzv only
 
-            var items = from pair in tmpht
-                        orderby pair.Value descending
-                        select pair;
-            int k = 0;
-            var nGrams = new Dictionary<string, int>();
-            var htp1n1 = new Dictionary<string, int>();
-            var htp1n2 = new Dictionary<string, int>();
-            var htp1n3 = new Dictionary<string, int>();
-            var htp2n1 = new Dictionary<string, int>();
-            var htp2n2 = new Dictionary<string, int>();
-            var htp2n3 = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, int> pair in items)
-            {
-                nGrams.Add(pair.Key, 0);
-                htp1n1.Add(pair.Key, pair.Value);
-                htp1n2.Add(pair.Key, 0);
-                htp1n3.Add(pair.Key, 0);
-                htp2n1.Add(pair.Key, 0);
-                htp2n2.Add(pair.Key, 0);
-                htp2n3.Add(pair.Key, 0);
-                if (k < (tmpht.Count / 10))
-                    k++;
-                else
-                    break;
-            }
-          //  Console.WriteLine(tmpht.Count);
+            var spersmenPrepare1 = sortedHist(listOfNewspapers1, hh);
+            var spersmenPrepare2 = sortedHist(listOfNewspapers2, hh);
 
-            ///second newspaper
-            sr = File.OpenText(@"newsp1/2.txt");
-            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-
-            foreach (string word in listOfStopWords)
-            {
-                s = s.Replace(" " + word + " ", " ");
-            }
-            s1 = Regex.Replace(s, @"\s+", " ");
-
-            while (!sr.EndOfStream)
-            {
-                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                s1 += " " + s;
-            }
-            s1 = Regex.Replace(s1, @"\s+", " ");
-            sr.Dispose();
-
-            for (int i = 0; i < s1.Length - 2; i++)
-            {
-                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
-                if (htp1n2.ContainsKey(tmpSt))
-                    htp1n2[tmpSt] += 1;
-            }
-            ///third newspaper
-            sr = File.OpenText(@"newsp1/3.txt");
-            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-
-            foreach (string word in listOfStopWords)
-            {
-                s = s.Replace(" " + word + " ", " ");
-            }
-            s1 = Regex.Replace(s, @"\s+", " ");
-
-            while (!sr.EndOfStream)
-            {
-                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                s1 += " " + s;
-            }
-            s1 = Regex.Replace(s1, @"\s+", " ");
-            sr.Dispose();
-
-            for (int i = 0; i < s1.Length - 2; i++)
-            {
-                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
-                if (htp1n3.ContainsKey(tmpSt))
-                    htp1n3[tmpSt] += 1;
-            }
-            ///1 newspaper2
-            sr = File.OpenText(@"newsp2/1.txt");
-            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-
-            foreach (string word in listOfStopWords)
-            {
-                s = s.Replace(" " + word + " ", " ");
-            }
-            s1 = Regex.Replace(s, @"\s+", " ");
-
-            while (!sr.EndOfStream)
-            {
-                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                s1 += " " + s;
-            }
-            s1 = Regex.Replace(s1, @"\s+", " ");
-            sr.Dispose();
-
-            for (int i = 0; i < s1.Length - 2; i++)
-            {
-                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
-                if (htp2n1.ContainsKey(tmpSt))
-                    htp2n1[tmpSt] += 1;
-            }
-            ///2 newspaper2
-            sr = File.OpenText(@"newsp2/2.txt");
-            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-
-            foreach (string word in listOfStopWords)
-            {
-                s = s.Replace(" " + word + " ", " ");
-            }
-            s1 = Regex.Replace(s, @"\s+", " ");
-
-            while (!sr.EndOfStream)
-            {
-                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                s1 += " " + s;
-            }
-            s1 = Regex.Replace(s1, @"\s+", " ");
-            sr.Dispose();
-
-            for (int i = 0; i < s1.Length - 2; i++)
-            {
-                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
-                if (htp2n2.ContainsKey(tmpSt))
-                    htp2n2[tmpSt] += 1;
-            }
-            ///1 newspaper3
-            sr = File.OpenText(@"newsp2/3.txt");
-            s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-
-            foreach (string word in listOfStopWords)
-            {
-                s = s.Replace(" " + word + " ", " ");
-            }
-            s1 = Regex.Replace(s, @"\s+", " ");
-
-            while (!sr.EndOfStream)
-            {
-                s = Regex.Replace(sr.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                s1 += " " + s;
-            }
-            s1 = Regex.Replace(s1, @"\s+", " ");
-            sr.Dispose();
-
-            for (int i = 0; i < s1.Length - 2; i++)
-            {
-                var tmpSt = "" + s1[i] + s1[i + 1] + s1[i + 2];
-                if (htp2n3.ContainsKey(tmpSt))
-                    htp2n3[tmpSt] += 1;
-            }
-            ///sorting all
-            var template = from pair in nGrams
-                         orderby pair.Value descending
-                         select pair;
-            var items1 = from pair in htp1n1
-                         orderby pair.Value descending
-                         select pair;
-            var items2 = from pair in htp1n2
-                         orderby pair.Value descending
-                         select pair;
-            var items3 = from pair in htp1n3
-                         orderby pair.Value descending
-                         select pair;
-
-            /*           var items4 = from pair in htp2n1
-                                    orderby pair.Value descending
-                                    select pair;
-                       var items5 = from pair in htp2n2
-                                    orderby pair.Value descending
-                                    select pair;
-                       var items6 = from pair in htp2n3
-                                    orderby pair.Value descending
-                                    select pair;
-           */
-            double sum = 0;
-            double[] arr = new double[10];
-            int index1,index2,index3;
-            index1 = 0;
-            foreach (KeyValuePair<string, int> pair1 in template)
-            {
-                index1++;
-                index2 = 0;
-                index3 = 0;
-                foreach (KeyValuePair<string, int> pair2 in items1)
-                {
-                    index2++;
-                    if (pair1.Key.Equals(pair2.Key))
-                        break;
-                }
-                foreach (KeyValuePair<string, int> pair2 in items2)
-                {
-                    index3++;
-                    if (pair1.Key.Equals(pair2.Key))
-                        break;
-                }
-                sum += Math.Pow((Math.Abs(index1 - index2) - Math.Abs(index1 - index3)), 2);
-
-            }
-            arr[0] = (1 - sum * 6 / ((Math.Pow(nGrams.Count, 2) - 1) * nGrams.Count));
-            foreach (KeyValuePair<string, int> pair1 in template)
-            {
-                index1++;
-                index2 = 0;
-                index3 = 0;
-                foreach (KeyValuePair<string, int> pair2 in items1)
-                {
-                    index2++;
-                    if (pair1.Key.Equals(pair2.Key))
-                        break;
-                }
-                foreach (KeyValuePair<string, int> pair2 in items3)
-                {
-                    index3++;
-                    if (pair1.Key.Equals(pair2.Key))
-                        break;
-                }
-                sum += Math.Pow((Math.Abs(index1 - index2) - Math.Abs(index1 - index3)), 2);
-
-            }
-            arr[1] = (1 - sum * 6 / ((Math.Pow(nGrams.Count, 2) - 1) * nGrams.Count));
+            //reqZV(spersmenPrepare1, 5);
+            reqDZV(spersmenPrepare1, spersmenPrepare2, 5);
 
             Console.Read();
         }
 
-        public static void preparefile2()
+        public static List<string> readStopWords(string path)
         {
-            StreamReader sr = new StreamReader("stopwords.txt");
+            StreamReader sr = new StreamReader(path);
             List<string> listOfStopWords = new List<string>();
             while (!sr.EndOfStream)
                 listOfStopWords.Add(sr.ReadLine());
             sr.Dispose();
+            return listOfStopWords;
+        }
 
-            string[] array1 = Directory.GetFiles(@"texts\");
-
-            List<string> listOfNewspapers = new List<string>();
-            foreach (string name in array1)
+        public static void reqDZV(List<string[]> papersAsHist1, List<string[]> papersAsHist2, int T)
+        {
+            int endpapers = (papersAsHist1.Count > papersAsHist2.Count) ? papersAsHist2.Count : papersAsHist1.Count;
+            for (int i = T; i < endpapers; i++)
             {
-                listOfNewspapers.Add(file2String(name, listOfStopWords));
+                double tmpval = 0;
+                tmpval += ZV(papersAsHist1[i], papersAsHist1, i, T);
+                tmpval += ZV(papersAsHist2[i], papersAsHist2, i, T);
+                tmpval -= ZV(papersAsHist1[i], papersAsHist2, i, T);
+                tmpval -= ZV(papersAsHist2[i], papersAsHist1, i, T);
+                tmpval = Math.Abs(tmpval);
+                Console.WriteLine(tmpval);
             }
-            Console.WriteLine("--- read files ---");
-            
-            var template = new Dictionary<string, int>();
-            for (int i = 0; i < listOfNewspapers[0].Length - 2; i++)
+        }
+
+        public static void reqZV(List<string[]> papersAsHist,int T)
+        {
+            for (int i = T; i < papersAsHist.Count; i++)
             {
-                var tmpSt = "" + listOfNewspapers[0][i] + listOfNewspapers[0][i + 1] + listOfNewspapers[0][i + 2];
+                double tmpval = ZV(papersAsHist[i], papersAsHist, i, T);
+                Console.WriteLine(tmpval);
+            }
+        }
+
+        public static List<string[]> sortedHist (List<string> listOfNewspapers, Dictionary<string,int> hh)
+        {
+            var spersmenPrepare = new List<string[]>();
+            foreach (string newspaper in listOfNewspapers)
+            {
+                var tmpHT = hist(newspaper, hh);
+
+                var tmpItems = from pair in tmpHT
+                               orderby pair.Value descending
+                               select pair;
+
+                string[] stringsArray = new string[hh.Count];
+                int counter = 0;
+                foreach (KeyValuePair<string, int> pair in tmpItems)
+                {
+                    stringsArray[counter++] = String.Copy(pair.Key);
+                }
+                spersmenPrepare.Add(stringsArray);
+            }
+            return spersmenPrepare;
+        }
+
+        public static Dictionary<string, int> hist(string newspaper, Dictionary<string, int> nGrams)
+        {
+            var tmpHT = new Dictionary<string, int>();
+            for (int i = 0; i < newspaper.Length - 2; i++)
+            {
+                var tmpSt = "" + newspaper[i] + newspaper[i + 1] + newspaper[i + 2];
+                if (tmpHT.ContainsKey(tmpSt))
+                    tmpHT[tmpSt] += 1;
+                else
+                    if (nGrams.ContainsKey(tmpSt))
+                    tmpHT.Add(tmpSt, 1);
+            }
+            return tmpHT;
+        }
+
+        public static Dictionary<string, int> histHandler(string newPapers1, string newPapers2)
+        {
+            string np = newPapers1 + " " + newPapers2;
+            var template = new Dictionary<string, int>();
+            for (int i = 0; i < np.Length - 2; i++)
+            {
+                var tmpSt = "" + np[i] + np[i + 1] + np[i + 2];
                 if (template.ContainsKey(tmpSt))
                     template[tmpSt] += 1;
                 else
                     template.Add(tmpSt, 1);
             }
-            
-            //IOrderedEnumerable<string,int>
+            //sorting
             var items = from pair in template
                         orderby pair.Value descending
                         select pair;
-            /////////////////////////////////////////////////////
-            //List<KeyValuePair<string, int>> myTry = new List<KeyValuePair<string, int>>(items);
-            /////////////////////////////////////////////////////
-
+            // 10% of nGrams
             int k = 0;
             var nGrams = new Dictionary<string, int>();
             foreach (KeyValuePair<string, int> pair in items)
             {
-                nGrams.Add(pair.Key, pair.Value);
+                nGrams.Add(pair.Key, 0);
                 if (k < (template.Count / 10))
                     k++;
                 else
                     break;
             }
-            Console.WriteLine("--- first nGram Done ---");
+            return nGrams;
+        }
 
-            //List<List<KeyValuePair<string, int>>> hist = new List<List<KeyValuePair<string, int>>>();
+        public static double ZV(string[] Newspaper, List<string[]> allNewspapers, int from, int TWindow)
+        {
+            double zv = 0;
+            for (int i = 0; i < TWindow; i++)
+                zv += Spearman(Newspaper, allNewspapers[from - 1 - i]); 
+            return (zv/TWindow);
+        }
 
-            
-            foreach (string newspaper in listOfNewspapers)
+        public static List<string> readNewspapers(string[] arr, List<string> stopW)
+        {
+            List<string> listOfNewspapers = new List<string>();
+            foreach (string name in arr)
             {
-                var tmpHT = new Dictionary<string, int>();
-                for (int i = 0; i < newspaper.Length - 2; i++)
-                {
-                    var tmpSt = "" + newspaper[i] + newspaper[i + 1] + newspaper[i + 2];
-                    if (template.ContainsKey(tmpSt) && tmpHT.ContainsKey(tmpSt))
-                        tmpHT[tmpSt] += 1;
-                    else
-                        if (template.ContainsKey(tmpSt))
-                            tmpHT.Add(tmpSt, 1);
-                }
-
-                var tmpItems = from pair in tmpHT
-                            orderby pair.Value descending
-                            select pair;
-
-                //   typeof(tmpItems);
-                Console.WriteLine(tmpItems.GetType());
-
-              //  ht.Add(tmpItems);
+                listOfNewspapers.Add(file2String(name, stopW));
             }
+            Console.WriteLine("--- read files ---");
+            return listOfNewspapers;
+        }
 
-
-            Console.Read();
+        public static double Spearman(string[] h1, string[] h2)
+        {
+            double sum = 0;
+            for (int i = 0; i < h1.Length; i++)
+                for (int j = 0; j < h2.Length; j++)
+                    if (((h1[i] != null) && (h2[j] != null)) && (h1[i].Equals(h2[j])))
+                    {
+                        sum += Math.Pow((i - j), 2);
+                        break;
+                    }
+            return (1 - (6 * sum) / ((Math.Pow(h1.Length, 2) - 1) * h1.Length));
         }
 
         public static string file2String(string fileName, List<string> stopWords)
@@ -401,72 +201,5 @@ namespace v1
             return s1;
         }
 
-
-        public static void preparefile()
-        {
-            Console.OutputEncoding = Encoding.Unicode;
-            StreamReader sr = new StreamReader("stopwords.txt");
-            List<string> listOfStopWords = new List<string>();
-            while (!sr.EndOfStream)
-                listOfStopWords.Add(sr.ReadLine());
-            sr.Dispose();
-            StreamReader sr2 = File.OpenText("tmp.txt");
-            StreamWriter sw = File.CreateText("out2.txt");
-            string s;
-            while (!sr2.EndOfStream)
-            {
-                s = Regex.Replace(sr2.ReadLine().ToLower(), @"[^\w\s]", " ");
-                foreach (string word in listOfStopWords)
-                {
-                    s = s.Replace(" " + word + " ", " ");
-                }
-                sw.WriteLine(Regex.Replace(s, @"\s+", " "));
-            }
-            sr2.Dispose();
-            sw.Dispose();
-        }
-
-
-        static void runit()
-        {
-            Console.OutputEncoding = Encoding.Unicode;
-            //  Program.preparefile();
-            StreamReader sr = File.OpenText("out2.txt");
-            var text = "";
-            if (!sr.EndOfStream)
-                text = sr.ReadLine();
-            while (!sr.EndOfStream)
-                text += " " + sr.ReadLine();
-            sr.Dispose();
-
-            var ht = new Dictionary<string, int>();
-            for (int i = 0; i < text.Length - 2; i++)
-            {
-                var tmpSt = "" + text[i] + text[i + 1] + text[i + 2];
-                if (ht.ContainsKey(tmpSt))
-                    ht[tmpSt] += 1;
-                else
-                    ht.Add(tmpSt, 1);
-            }
-
-            var items = from pair in ht
-                        orderby pair.Value descending
-                        select pair;
-            
-            var sw = File.CreateText("out4.txt");
-            Console.WriteLine(ht.Count);
-            int k = 0;
-            foreach (KeyValuePair<string, int> pair in items)
-            {
-                sw.WriteLine("{0}: {1}", pair.Key, pair.Value);
-                if (k < (ht.Count / 10))
-                    k++;
-                else
-                    break;
-            }
-            sw.Dispose();
-
-            Console.Read();
-        }
     }
 }
